@@ -303,6 +303,38 @@ class GithubFunctionality:
             output["data"] = response.json()
 
         return output
+    
+    def update_ref_of_branch(self, repo_name: str, sha: str, branch: str) -> dict:
+        "update ref of branch"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            # data = '{"sha":"aa218f56b14c9653891f9e74264a383fa43fefbd","force":true}'
+            payload = json.dumps({
+                "sha": f"{sha}",
+                "force": True
+            })
+
+            response = requests.post(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/refs/{branch}",
+                headers=self.__headers,
+                data=payload
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - update_ref_of_branch] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
+    
 
     def create_pr(self, repo_name: str) -> dict:
         "create PR"
@@ -401,3 +433,10 @@ if __name__ == "__main__":
     
     # res = github_func_obj.create_pr(REPOSITORY_NAME)
     # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+
+    sha = "4b7f0ddbc24651ee001fa178d76233798256d755"
+    branch = "branch-2"
+    res = github_func_obj.update_ref_of_branch(REPOSITORY_NAME, sha, branch)
+    print(json.dumps(res))
