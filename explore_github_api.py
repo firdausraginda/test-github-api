@@ -150,7 +150,7 @@ class GithubFunctionality:
 
         return output
     
-    def create_branch(self, repo_name: str, new_ref_name: str) -> dict:
+    def create_branch(self, repo_name: str, new_ref_name: str, sha: str) -> dict:
         "create branch"
 
         output = {
@@ -162,7 +162,7 @@ class GithubFunctionality:
         try:         
             payload = json.dumps({
                 "ref": f"refs/heads/{new_ref_name}", 
-                "sha": "9530a16ee4445775be609b8ed855f6abb719d08c"
+                "sha": f"{sha}"
             })
 
             response = requests.post(
@@ -210,6 +210,68 @@ class GithubFunctionality:
 
         return output
     
+    def get_tree(self, repo_name: str, branch: str) -> dict:
+        "get tree"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            response = requests.get(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/trees/{branch}",
+                headers=self.__headers
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - get_tree] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
+    
+    def post_tree(self, repo_name: str) -> dict:
+        "post tree"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            # data = '{"base_tree":"9fb037999f264ba9a7fc6274d15fa3ae2ab98312","tree":[{"path":"file.rb","mode":"100644","type":"blob","sha":"44b4fc6d56897b048c772eb4087f854f46256132"}]}'
+            payload = json.dumps({
+                "tree": [
+                    {
+                        "path":"helloworld/main.py",
+                        "mode":"100644",
+                        "type":"blob",
+                        "sha":"929246f65aab4d636cb229c790f966afc332c124"
+                    }
+                ],
+                "base_tree": "9530a16ee4445775be609b8ed855f6abb719d08c"
+            })
+
+            response = requests.post(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/trees",
+                headers=self.__headers,
+                data=payload
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - post_tree] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
+    
     
 if __name__ == "__main__":
     # pr_num = "1"
@@ -246,7 +308,8 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
 
     # new_ref_name = "branch-2"
-    # res = github_func_obj.create_branch(REPOSITORY_NAME, new_ref_name)
+    # sha = "9530a16ee4445775be609b8ed855f6abb719d08c"
+    # res = github_func_obj.create_branch(REPOSITORY_NAME, new_ref_name, sha)
     # print(json.dumps(res))
 
     # ------------------------------------------------------------------
@@ -256,3 +319,11 @@ if __name__ == "__main__":
 
     # ------------------------------------------------------------------
 
+    # new_branch = "branch-2"
+    # res = github_func_obj.get_tree(REPOSITORY_NAME, new_branch)
+    # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+
+    # res = github_func_obj.post_tree(REPOSITORY_NAME)
+    # print(json.dumps(res))
