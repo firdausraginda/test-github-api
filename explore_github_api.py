@@ -162,10 +162,10 @@ class GithubFunctionality:
         try:         
             payload = json.dumps({
                 "ref": f"refs/heads/{new_ref_name}", 
-                "sha": "9285e327c6bdb557d88ad2b769ff3a8c8e40b144"
+                "sha": "9530a16ee4445775be609b8ed855f6abb719d08c"
             })
 
-            response = requests.get(
+            response = requests.post(
                 url=f"{URL_GITHUB_API}/{repo_name}/git/refs",
                 headers=self.__headers,
                 data=payload
@@ -176,7 +176,7 @@ class GithubFunctionality:
             output["error"].append(f"[github_functionality - get_pr_reference] {e}")
 
         else:
-            output["data"] = response.status_code
+            output["data"] = response.json()
 
         return output
     
@@ -187,8 +187,8 @@ if __name__ == "__main__":
 
     # ------------------------------------------------------------------
 
-    review_body = "testing comment 1"
-    res = github_func_obj.write_pr_review(REPOSITORY_NAME, pr_num, review_body)
+    # review_body = "testing comment 1"
+    # res = github_func_obj.write_pr_review(REPOSITORY_NAME, pr_num, review_body)
 
     # ------------------------------------------------------------------
 
@@ -217,4 +217,4 @@ if __name__ == "__main__":
 
     new_ref_name = "branch-2"
     res = github_func_obj.create_pr_reference(REPOSITORY_NAME, new_ref_name)
-    print(res)
+    print(json.dumps(res))
