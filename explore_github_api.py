@@ -125,6 +125,60 @@ class GithubFunctionality:
             output["data"] = response.status_code
 
         return output
+
+    def get_pr_reference(self, repo_name: str, ref: str) -> dict:
+        "get PR reference"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            response = requests.get(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/ref/{ref}",
+                headers=self.__headers
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - get_pr_reference] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
+    
+    def create_pr_reference(self, repo_name: str, new_ref_name: str) -> dict:
+        "get PR reference"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:         
+            payload = json.dumps({
+                "ref": f"refs/heads/{new_ref_name}", 
+                "sha": "9285e327c6bdb557d88ad2b769ff3a8c8e40b144"
+            })
+
+            response = requests.get(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/refs",
+                headers=self.__headers,
+                data=payload
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - get_pr_reference] {e}")
+
+        else:
+            output["data"] = response.status_code
+
+        return output
     
     
 if __name__ == "__main__":
@@ -151,3 +205,16 @@ if __name__ == "__main__":
     # list_reviewer = [item.name for item in github_user_name_detail_obj.detail]
     # res = github_func_obj.remove_reviewer_from_pr(REPOSITORY_NAME, pr_num, list_reviewer)
     # print(res)
+
+    # ------------------------------------------------------------------
+
+    # ref = "heads/branch-1"
+    # # ref = "f986f4d3548d4e557b69f8289ac7f5fb41e870a7"
+    # res = github_func_obj.get_pr_reference(REPOSITORY_NAME, ref)
+    # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+
+    new_ref_name = "branch-2"
+    res = github_func_obj.create_pr_reference(REPOSITORY_NAME, new_ref_name)
+    print(res)
