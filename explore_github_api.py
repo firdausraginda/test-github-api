@@ -303,6 +303,38 @@ class GithubFunctionality:
             output["data"] = response.json()
 
         return output
+
+    def create_pr(self, repo_name: str) -> dict:
+        "create PR"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            # data = '{"title":"Amazing new feature","body":"Please pull these awesome changes in!","head":"octocat:new-feature","base":"master"}'
+            payload = json.dumps({
+                "title": "branch 2 create PR",
+                "head": "branch-2",
+                "base": "main"
+            })
+
+            response = requests.post(
+                url=f"{URL_GITHUB_API}/{repo_name}/pulls",
+                headers=self.__headers,
+                data=payload
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - create_pr] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
     
     
 if __name__ == "__main__":
@@ -363,4 +395,9 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
 
     # res = github_func_obj.add_commit(REPOSITORY_NAME)
+    # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+    
+    # res = github_func_obj.create_pr(REPOSITORY_NAME)
     # print(json.dumps(res))
