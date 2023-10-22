@@ -126,8 +126,8 @@ class GithubFunctionality:
 
         return output
 
-    def get_pr_reference(self, repo_name: str, ref: str) -> dict:
-        "get PR reference"
+    def get_branch_reference(self, repo_name: str, ref: str) -> dict:
+        "get reference in a branch"
 
         output = {
             "status": True,
@@ -143,15 +143,15 @@ class GithubFunctionality:
 
         except Exception as e:
             output["status"] = False
-            output["error"].append(f"[github_functionality - get_pr_reference] {e}")
+            output["error"].append(f"[github_functionality - get_branch_reference] {e}")
 
         else:
             output["data"] = response.json()
 
         return output
     
-    def create_pr_reference(self, repo_name: str, new_ref_name: str) -> dict:
-        "get PR reference"
+    def create_branch(self, repo_name: str, new_ref_name: str) -> dict:
+        "create branch"
 
         output = {
             "status": True,
@@ -173,7 +173,37 @@ class GithubFunctionality:
 
         except Exception as e:
             output["status"] = False
-            output["error"].append(f"[github_functionality - get_pr_reference] {e}")
+            output["error"].append(f"[github_functionality - create_branch] {e}")
+
+        else:
+            output["data"] = response.json()
+
+        return output
+    
+    def create_blobs(self, repo_name: str) -> dict:
+        "create git blobs"
+
+        output = {
+            "status": True,
+            "data": {},
+            "error": []
+        }
+
+        try:
+            payload = json.dumps({
+                "content": "Content of the blob",
+                "encoding": "utf-8"
+            })
+
+            response = requests.post(
+                url=f"{URL_GITHUB_API}/{repo_name}/git/blobs",
+                headers=self.__headers,
+                data=payload
+            )
+
+        except Exception as e:
+            output["status"] = False
+            output["error"].append(f"[github_functionality - create_blobs] {e}")
 
         else:
             output["data"] = response.json()
@@ -182,7 +212,7 @@ class GithubFunctionality:
     
     
 if __name__ == "__main__":
-    pr_num = "1"
+    # pr_num = "1"
     github_func_obj = GithubFunctionality()
 
     # ------------------------------------------------------------------
@@ -209,12 +239,20 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------
 
     # ref = "heads/branch-1"
-    # # ref = "f986f4d3548d4e557b69f8289ac7f5fb41e870a7"
-    # res = github_func_obj.get_pr_reference(REPOSITORY_NAME, ref)
+    # ref = "heads/branch-2"
+    # res = github_func_obj.get_branch_reference(REPOSITORY_NAME, ref)
     # print(json.dumps(res))
 
     # ------------------------------------------------------------------
 
-    new_ref_name = "branch-2"
-    res = github_func_obj.create_pr_reference(REPOSITORY_NAME, new_ref_name)
-    print(json.dumps(res))
+    # new_ref_name = "branch-2"
+    # res = github_func_obj.create_branch(REPOSITORY_NAME, new_ref_name)
+    # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+
+    # res = github_func_obj.create_blobs(REPOSITORY_NAME)
+    # print(json.dumps(res))
+
+    # ------------------------------------------------------------------
+
