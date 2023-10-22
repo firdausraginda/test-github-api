@@ -13,7 +13,7 @@ creds_file.close()
 # constant variables
 GITHUB_API_TOKEN = creds["github_api_token_personal"]
 URL_GITHUB_API = "https://api.github.com/repos/firdausraginda"
-REPOSITORY_NAME = "datest-github-api"
+REPOSITORY_NAME = "test-github-api"
 
 
 class GithubFunctionality:
@@ -128,7 +128,7 @@ class GithubFunctionality:
     
     
 if __name__ == "__main__":
-    pr_num = "1043"
+    pr_num = "1"
     github_func_obj = GithubFunctionality()
 
     # ------------------------------------------------------------------
